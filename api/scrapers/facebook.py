@@ -1,6 +1,5 @@
 from selenium import webdriver
-import time
-import random
+import time, random
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
@@ -33,7 +32,7 @@ class Facebook():
 
     # sign in to facebook account
 
-    def auth(self, email, password):
+    def auth(self, email: str, password: str):
         self.email = email
         self.password = password
         browser = self.browser
