@@ -1,5 +1,6 @@
 from selenium import webdriver
-import time, random
+import time
+import random
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
@@ -36,7 +37,6 @@ class Facebook():
         self.email = email
         self.password = password
         browser = self.browser
-        print(browser)
         input_email = browser.find_element_by_name('email')
         input_password = browser.find_element_by_name('pass')
         input_email.send_keys(email)
@@ -125,6 +125,19 @@ class Facebook():
         browser.refresh()
         time.sleep(random.randrange(5, 7))
         time.sleep(random.randrange(5, 7))
+
+    def add_users_to_set(self, list: set):
+        browser = self.browser
+        for user in list:
+            browser.get("https://facebook.com/{}".format(user))
+            time.sleep(random.randrange(5, 7))
+            try:
+                name = browser.find_element_by_xpath(
+                    '/html/body/div[1]/div[1]/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div/div/div[1]/div[2]/div/div/div/div[3]/div/div/div[1]/div/div/span/div/h1').text
+                time.sleep(random.randrange(2, 3))
+                self.users.add((name, user))
+            except NoSuchElementException:
+                continue
 
     def scrape_followers(self):
         browser = self.browser
@@ -217,7 +230,7 @@ class Facebook():
                     messages_to_send.append(replace(message=message))
 
                 message_to_send = random.choice(messages_to_send)
-                print(message_to_send)
+
                 message_input.send_keys(message_to_send)
                 time.sleep(random.randrange(3, 4))
                 message_input.send_keys(Keys.ENTER)

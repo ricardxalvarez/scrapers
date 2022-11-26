@@ -5,7 +5,8 @@ name = "pypi"
 
 [packages]
 django = "*"
-selenium = "3.141.0"
+django-cors-headers = "*"
+selenium = "==3.141.0"
 
 [dev-packages]
 autopep8 = "*"

@@ -26,8 +26,12 @@ class Instagram():
         browser = self.browser
         browser.get('https://instagram.com')
         browser.set_window_size(900, 700)
-        time.sleep(random.randrange(4, 6))
-
+        time.sleep(random.randrange(5, 7))
+        try:
+            browser.find_element_by_xpath(
+                '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/button[2]').click()
+        except NoSuchElementException:
+            pass
         # declare set of users we will send messages
         self.users = set()
 
@@ -71,24 +75,34 @@ class Instagram():
                 '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[3]/button[2]').click()
         except NoSuchElementException:
             print('Pop out element not found')
+        time.sleep(13)
         # except Exception as err:
         #     print(err)
         #     browser.quit()
 
     def scrape_followers(self):
-        username = self.username
         browser = self.browser
         try:
-            browser.get('https://instagram.com/{}'.format(username))
+            time.sleep(random.randrange(7, 10))
+            browser.find_element_by_xpath(
+                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div[1]/div/div/div/div[2]/div[7]/div/div/a').click()
 
-            time.sleep(random.randrange(4, 6))
+            time.sleep(random.randrange(13, 15))
             #  gets the quantity this user has
             # so we can know when to stop 'while is_scrolling' loop
-            followers_quantity = int(browser.find_element_by_xpath(
-                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[2]/a/div/span').get_attribute('title'))
+            try:
+                followers_quantity = int(browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[2]/a/div/span').get_attribute('title'))
+            except NoSuchElementException:
+                followers_quantity = int(browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[2]/div[2]/section/main/div/header/section/ul/li[2]/a/div/span').text)
             # finds and opens followers list
-            followers_button = browser.find_element_by_xpath(
-                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[2]/a')
+            try:
+                followers_button = browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[2]/a')
+            except NoSuchElementException:
+                followers_button = browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[2]/div[2]/section/main/div/header/section/ul/li[2]/a')
             followers_button.click()
 
             time.sleep(random.randrange(1, 3))
@@ -132,6 +146,7 @@ class Instagram():
                     break
 
             print('[Info] - Saving...')
+            # await client_socket.send('{} followers scraped'.format(followers_list.__len__()))
             # print('[DONE] - Your followers are saved in followers.txt file!')
 
             # writes a file of the followers
@@ -151,19 +166,34 @@ class Instagram():
             browser.find_element_by_xpath(
                 '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[1]/div/div[3]/div/button').click()
             return self.users
+            time.sleep(random.randrange(4, 6))
         except NoSuchElementException as err:
             print(err)
             browser.quit()
+
+    def add_users_to_set(self, list: set):
+        for user in list:
+            self.users.add(user)
 
     def scrape_following(self):
         browser = self.browser
         try:
             # takes how many people follows you
-            following_count = int(browser.find_element_by_xpath(
-                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[3]/a/div/span').text)
+            time.sleep(10)
+            try:
+                following_count = int(browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[3]/a/div/span').text)
+            except NoSuchElementException:
+                following_count = int(browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[2]/div[2]/section/main/div/header/section/ul/li[3]/a/div/span').text)
             # opnes ths pop out showing a list
-            browser.find_element_by_xpath(
-                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[3]/a').click()
+            try:
+                browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[3]/a').click()
+            except NoSuchElementException:
+                browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[2]/div[2]/section/main/div/header/section/ul/li[3]/a').click()
+            # await client_socket.send('This user has {} followers'.format(following_count))
             is_scrolling = True
             not_changed = 0
             time.sleep(random.randrange(3, 5))
@@ -197,11 +227,13 @@ class Instagram():
                     except NoSuchElementException:
                         continue
                 print(following_count)
+                print(self.users.__len__())
 
                 # if this set is larger or equal than the followers quantity then will brake this loop
                 if (following_count <= self.users.__len__()):
                     break
             print('[Info] - Saving...')
+            # await client_socket.send('{} users scraped'.format(following_list.__len__()))
             # print('[DONE] - Your followers are saved in followers.txt file!')
 
             # writes a file of the followers
@@ -214,6 +246,7 @@ class Instagram():
     def send_messages(self):
         browser = self.browser
         try:
+            # await client_socket.send('Starting to send messages')
             messages = ['Hello {}, this for testing', 'Hi {}, this is for testing',
                         'Hallo {}, das ist für testing', 'Hola {}, esto es para testear']
             # goes to inbox page
@@ -226,8 +259,12 @@ class Instagram():
             except NoSuchElementException:
                 print('Turn on notifications pop out already closed')
             # open mmessage sender
-            browser.find_element_by_xpath(
-                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/div/div[2]/div/div/div[2]/div/div[3]/div/button').click()
+            try:
+                browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/div/div[2]/div/div/div[2]/div/div[3]/div/button').click()
+            except NoSuchElementException:
+                browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div/div[2]/div/section/div/div/div/div/div[1]/div[1]/div/div[3]/button').click()
             time.sleep(random.randrange(2, 3))
             for follower in self.users:
                 time.sleep(random.randrange(3, 5))
@@ -247,6 +284,7 @@ class Instagram():
                 users = browser.find_elements_by_xpath(
                     '/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div[2]/div[2]/div')
                 # checks te list of results
+                # await client_socket.send('Sending messages...')
                 for user in users:
                     # get the username of each results
                     username = user.find_element_by_xpath(
@@ -263,8 +301,12 @@ class Instagram():
 
                         time.sleep(random.randrange(4, 6))
                         # finds the input that the message will be in
-                        message_input = browser.find_element_by_xpath(
-                            '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[2]/textarea')
+                        try:
+                            message_input = browser.find_element_by_xpath(
+                                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[2]/textarea')
+                        except NoSuchElementException:
+                            message_input = browser.find_element_by_xpath(
+                                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div/div[2]/div/section/div/div/div/div/div[2]/div[2]/div/div[2]/div/div/div[2]/textarea')
 
                         message_input.click()
                         message_input.clear()
@@ -283,14 +325,23 @@ class Instagram():
 
                         time.sleep(random.randrange(1, 2))
                         # click button to send the message
-                        browser.find_element_by_xpath(
-                            '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[3]/button').click()
+                        try:
+                            browser.find_element_by_xpath(
+                                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/div/div[2]/div/div/div[2]/div[2]/div/div[2]/div/div/div[3]/button').click()
+                        except NoSuchElementException:
+                            browser.find_element_by_xpath(
+                                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div/div[2]/div/section/div/div/div/div/div[2]/div[2]/div/div[2]/div/div/div[3]/button').click()
 
                         time.sleep(3)
                         # opens again dm searcher
-                        browser.find_element_by_xpath(
-                            '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/div/div[2]/div/div/div[1]/div[1]/div/div[3]/button').click()
+                        try:
+                            browser.find_element_by_xpath(
+                                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/section/div/div[2]/div/div/div[1]/div[1]/div/div[3]/button').click()
+                        except NoSuchElementException:
+                            browser.find_element_by_xpath(
+                                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div/div[2]/div/section/div/div/div/div/div[1]/div[1]/div/div[3]/button').click()
                         break
+            # await client_socket.send('Messages sent succesfully')
             browser.quit()
         except Exception as err:
             print(err)
