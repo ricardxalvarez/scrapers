@@ -275,8 +275,7 @@ class Instagram():
                 browser.find_element_by_xpath(
                     '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div/div[2]/div/section/div/div/div/div/div[1]/div[1]/div/div[3]/button').click()
             time.sleep(random.randrange(2, 3))
-            list = ['ricardxalvarez', 'esgualipado']
-            for follower in list:
+            for follower in self.users:
                 time.sleep(random.randrange(3, 5))
                 # selects users search input
                 searcher_input = browser.find_element_by_xpath(
