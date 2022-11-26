@@ -25,6 +25,7 @@ class FacebookScraper(View):
         try:
             jd["email"]
             jd["password"]
+            jd["message"]
         except KeyError:
             return JsonResponse({"status": False, "content": 'Make sure of sending email and password'})
         f.auth(jd["email"], jd["password"])
@@ -43,7 +44,7 @@ class FacebookScraper(View):
                 f.add_users_to_set(jd["specific_users"])
         except KeyError:
             pass
-        f.send_messages()
+        f.send_messages(jd["message"])
         f.quit()
         return JsonResponse({"status": True, "content": "backend working!!"})
 
@@ -59,6 +60,7 @@ class InstagramScraper(View):
         try:
             jd["username"]
             jd["password"]
+            jd["message"]
         except KeyError:
             return JsonResponse({"status": False, "content": 'Make sure of sending email and password'})
         i = Instagram()
@@ -78,7 +80,7 @@ class InstagramScraper(View):
                 i.add_users_to_set(jd["specific_users"])
         except KeyError:
             pass
-        i.send_messages()
+        i.send_messages(jd["message"])
         i.quit()
         return JsonResponse({"status": True, "content": "backend working!!"})
 

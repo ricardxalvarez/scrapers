@@ -84,8 +84,12 @@ class Instagram():
         browser = self.browser
         try:
             time.sleep(random.randrange(7, 10))
-            browser.find_element_by_xpath(
-                '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div[1]/div/div/div/div[2]/div[7]/div/div/a').click()
+            try:
+                browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div[1]/div/div/div/div[2]/div[7]/div/div/a').click()
+            except NoSuchElementException:
+                browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div[1]/div/div/div/div/div[2]/div[7]/div/div/a').click()
 
             time.sleep(random.randrange(13, 15))
             #  gets the quantity this user has
@@ -126,7 +130,7 @@ class Instagram():
                 try:
                     browser.find_element_by_xpath(
                         "/html/body/div[1]/div/div/div/div[2]/div/div/div[1]/div/div[2]/div/div/div/div/div[2]/div/div/div[2]/div[2]/div")
-                except NoSuchElementException:
+                except NoSuchElementException or StaleElementReferenceException:
                     not_changed = not_changed + 1
                 # gets a new list of followers (10 more approximaly)
                 followers = browser.find_elements_by_xpath(
@@ -179,7 +183,14 @@ class Instagram():
         browser = self.browser
         try:
             # takes how many people follows you
-            time.sleep(10)
+            time.sleep(random.randrange(7, 10))
+            try:
+                browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[2]/div[1]/div/div/div/div/div[2]/div[7]/div/div/a').click()
+            except NoSuchElementException:
+                browser.find_element_by_xpath(
+                    '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div[1]/div/div/div/div/div[2]/div[7]/div/div/a').click()
+            time.sleep(random.randrange(13, 15))
             try:
                 following_count = int(browser.find_element_by_xpath(
                     '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/section/main/div/header/section/ul/li[3]/a/div/span').text)
@@ -224,7 +235,7 @@ class Instagram():
                                 element.get_attribute('href').split("/")[3])
                         else:
                             continue
-                    except NoSuchElementException:
+                    except NoSuchElementException or StaleElementReferenceException:
                         continue
                 print(following_count)
                 print(self.users.__len__())
@@ -243,12 +254,10 @@ class Instagram():
             print(err)
             browser.quit()
 
-    def send_messages(self):
+    def send_messages(self, message_struc: str):
         browser = self.browser
         try:
             # await client_socket.send('Starting to send messages')
-            messages = ['Hello {}, this for testing', 'Hi {}, this is for testing',
-                        'Hallo {}, das ist für testing', 'Hola {}, esto es para testear']
             # goes to inbox page
             browser.get('https://www.instagram.com/direct/inbox/')
             time.sleep(2)
@@ -266,7 +275,8 @@ class Instagram():
                 browser.find_element_by_xpath(
                     '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div/div[2]/div/section/div/div/div/div/div[1]/div[1]/div/div[3]/button').click()
             time.sleep(random.randrange(2, 3))
-            for follower in self.users:
+            list = ['ricardxalvarez', 'esgualipado']
+            for follower in list:
                 time.sleep(random.randrange(3, 5))
                 # selects users search input
                 searcher_input = browser.find_element_by_xpath(
@@ -312,16 +322,9 @@ class Instagram():
                         message_input.clear()
                         # sends the message to the input
 
-                        def replace(message):
-                            return message.format(follower)
-
-                        messages_to_send = []
-
-                        for message in messages:
-                            messages_to_send.append(replace(message=message))
-
-                        message_to_send = random.choice(messages_to_send)
-                        message_input.send_keys(message_to_send)
+                        message = message_struc.replace('/&&/', username)
+                        print(message)
+                        message_input.send_keys(message)
 
                         time.sleep(random.randrange(1, 2))
                         # click button to send the message
@@ -342,7 +345,6 @@ class Instagram():
                                 '/html/body/div[1]/div/div/div/div[1]/div/div/div/div[1]/div[1]/div/div[2]/div/section/div/div/div/div/div[1]/div[1]/div/div[3]/button').click()
                         break
             # await client_socket.send('Messages sent succesfully')
-            browser.quit()
         except Exception as err:
             print(err)
 

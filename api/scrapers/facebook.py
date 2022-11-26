@@ -49,7 +49,7 @@ class Facebook():
             error = browser.find_element_by_xpath(
                 '/html/body/div[1]/div[1]/div[1]/div/div[2]/div[2]/form/div[1]/div[1]').text
             time.sleep(2)
-            browser.get('https://facebook.com')
+            browser.quit()
             return
         except NoSuchElementException:
             pass
@@ -57,7 +57,7 @@ class Facebook():
             error = browser.find_element_by_xpath(
                 '/html/body/div[1]/div[1]/div[1]/div/div[2]/div[2]/form/div/div[2]/div[2]/text()').text
             time.sleep(2)
-            browser.get('https://facebook.com')
+            browser.quit()
             return
         except NoSuchElementException:
             pass
@@ -188,10 +188,8 @@ class Facebook():
         time.sleep(random.randrange(5, 7))
         browser.refresh()
 
-    def send_messages(self):
+    def send_messages(self, message_struc: str):
         browser = self.browser
-        messages_list = ['Hello {}, this for testing', 'Hi {}, this is for testing',
-                         'Hallo {}, das ist für testing', 'Hola {}, esto es para testear']
 
         browser.set_window_size(1200, 700)
 
@@ -215,31 +213,21 @@ class Facebook():
                 time.sleep(random.randrange(3, 4))
                 try:
                     message_input = browser.find_element_by_xpath(
-                        '/html/body/div[1]/div[1]/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[1]/div[3]/div/div/div[2]/div/div/div[4]/div[2]/div/div/div[1]')
+                        '/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div/div/div[1]/div[2]/div/div/div[2]/div/div/div[4]/div[2]/div/div/div[1]')
                 except NoSuchElementException:
                     message_input = browser.find_element_by_xpath(
-                        '/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[3]/div/div/div[2]/div/div/div[4]/div[2]/div/div/div[1]')
+                        '/html/body/div[1]/div/div[1]/div/div[3]/div/div/div/div[1]/div[1]/div[2]/div/div/div/div/div/div[2]/div/div/div[2]/div/div/div[4]/div[2]/div/div/div[1]')
                 message_input.click()
 
-                def replace(message):
-                    return message.format(receiver[0])
-
-                messages_to_send = []
-
-                for message in messages_list:
-                    messages_to_send.append(replace(message=message))
-
-                message_to_send = random.choice(messages_to_send)
-
-                message_input.send_keys(message_to_send)
+                message = message_struc.replace('/&&/', receiver[0])
+                print(message)
+                message_input.send_keys(message)
                 time.sleep(random.randrange(3, 4))
                 message_input.send_keys(Keys.ENTER)
                 time.sleep(random.randrange(2, 3))
             except (NoSuchElementException, StaleElementReferenceException) as err:
                 print(err)
         time.sleep(random.randrange(5, 7))
-
-        # browser.quit()
 
     def quit(self):
         self.browser.quit()
